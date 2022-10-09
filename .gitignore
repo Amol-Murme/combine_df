@@ -1,4 +1,6 @@
 OneDrive_2022-10-07/
 read_data.ipynb
 All_Data_Files/
-.venv
+.venv/
+.vscode/
+Retail_Exercise_2022/*
