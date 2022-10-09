@@ -1,3 +1,5 @@
+"""Concatenate spreadsheets into a single spreadsheet."""
+
 import os
 import time
 from datetime import datetime as dt
@@ -27,7 +29,12 @@ for file_ in files:
         i += 1
         file_path = f"{input_file_path}/{file_}"
         file_df: pl.DataFrame = pl.read_excel(
-            file=file_path, read_csv_options={"infer_schema_length": None}
+            file=file_path,
+            read_csv_options={
+                "infer_schema_length": None,
+                "rechunk": True,
+                "n_threads": 8,
+            },
         )
         date_string = " ".join(
             [item.strip().replace("-", "") for item in file_.split(".")[0].split()[-2:]]
@@ -45,9 +52,11 @@ for file_ in files:
         df_list.append(file_df)
         end_time = time.perf_counter()
         times.append(end_time - start_time)
+        average_time_per_file = sum(times) / len(times)
         print(f"{i}. Finished {i} of {tot_} files.")
         print(f"Took {(end_time - start_time)} seconds for this file.")
-        print(f"Approximately {(sum(times)/len(times)) * (tot_-i)} seconds left.")
+        print(f"Average time for reading one file is {average_time_per_file} seconds.")
+        print(f"Approximately {average_time_per_file * (tot_-i)} seconds left.")
         print("\n")
 
 start_time = time.perf_counter()
